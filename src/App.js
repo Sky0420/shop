@@ -13,6 +13,8 @@ import axios from 'axios';
 import { type } from '@testing-library/user-event/dist/type';
 import { useQuery } from 'react-query';
 
+// 깃 테스트 주석입니다.
+
 function App() {
 
   useEffect(() => {

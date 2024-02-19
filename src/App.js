@@ -4,14 +4,18 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import shoesData from './data';
 import { Routes, Route, Link, useNavigate, Outlet, BrowserRouter } from 'react-router-dom';
-import Detail from './routes/Detail';
-import Cart from './routes/Cart'
 import axios from 'axios';
 import { type } from '@testing-library/user-event/dist/type';
 import { useQuery } from 'react-query';
+
+
+// Lazy import 중요하지 않은 import는
+// 나중에 필요할 때 import될 수 있도록 함
+const Detail = lazy(()=> import('./routes/Detail'));
+const Cart = lazy(()=> import('./routes/Cart'));
 
 // 깃 테스트 주석입니다.
 
@@ -50,42 +54,44 @@ function App() {
         </Container>
       </Navbar>
 
-      <Routes>
+      <Suspense fallback={<div>Loading . . .</div>}>
+        <Routes>
 
-        <Route path="/" element={
-          <>
+          <Route path="/" element={
+            <>
 
-            <div className="main-bg"></div>
+              <div className="main-bg"></div>
 
-            <Container>
-              <Row>
-                <ShoesCard shoes={shoes}></ShoesCard>
-              </Row>
-            </Container>
+              <Container>
+                <Row>
+                  <ShoesCard shoes={shoes}></ShoesCard>
+                </Row>
+              </Container>
 
-            <button onClick={() => {
-              axios.get('https://codingapple1.github.io/shop/data2.json')
-                .then((result) => {
-                  let copyShoes = [...shoes];
-                  result.data.forEach((a) => {
-                    copyShoes.push(a);
-                  });
-                  setShoes(copyShoes);
-                })
-                .catch(() => {
-                  console.log('Failed to load')
-                })
-            }}>Show More</button>
-          </>
-        } />
+              <button onClick={() => {
+                axios.get('https://codingapple1.github.io/shop/data2.json')
+                  .then((result) => {
+                    let copyShoes = [...shoes];
+                    result.data.forEach((a) => {
+                      copyShoes.push(a);
+                    });
+                    setShoes(copyShoes);
+                  })
+                  .catch(() => {
+                    console.log('Failed to load')
+                  })
+              }}>Show More</button>
+            </>
+          } />
 
-        <Route path="/detail/:id" element={<Detail shoes={shoes} />} />
+          <Route path="/detail/:id" element={<Detail shoes={shoes} />} />
 
-        <Route path="/cart" element={<Cart />} />
+          <Route path="/cart" element={<Cart />} />
 
-        <Route path="*" element={<div>존재하지 않는 페이지입니다</div>} />
+          <Route path="*" element={<div>존재하지 않는 페이지입니다</div>} />
 
-      </Routes>
+        </Routes>
+      </Suspense>
 
 
     </div>
